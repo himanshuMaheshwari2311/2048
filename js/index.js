@@ -7,6 +7,13 @@ let gameState = [
     [0, 0, 0, 0],
 ];
 
+let emptyIndex = [
+    0, 1, 2, 3,
+    4, 5, 6, 7,
+    8, 9, 10, 11,
+    12, 13, 14, 15
+];
+
 const UP = 'UP';
 const DOWN = 'DOWN';
 const LEFT = 'LEFT';
@@ -23,8 +30,35 @@ $(document).ready(function() {
     renderBoard();
 });
 
-function getTileId(x, y) {
-    return x * boardSize + y;
+function updateTile(value, pos) {
+    let tile = document.getElementById(pos);
+    tile.classList.add('cell-' + value.toString());
+    tile.textContent = value;
+}
+
+function fillRandomCell() {
+    let pos = Math.floor(Math.random() * (emptyIndex.length));
+    num = emptyIndex[pos];
+
+    let x1 = Math.floor(num / boardSize);
+    let y1 = num % boardSize;
+
+    let value = (Math.floor(Math.random() * 2) + 1) * 2;
+    gameState[x1][y1] = value;
+
+    updateEmptyIndeices();
+    console.log(emptyIndex);
+    updateTile(value, num);
+    return;
+}
+
+function updateEmptyIndeices() {
+    list = [];
+    for (var i = 0; i < boardSize; i++)
+        for (var j = 0; j < boardSize; j++)
+            if (gameState[i][j] == 0)
+                list.push(i * boardSize + j);
+    emptyIndex = list;
 }
 
 function renderBoard() {
@@ -38,25 +72,12 @@ function renderBoard() {
             row.append('<td class=\'game-tile\' id=\'' + id + '\'></td>');
         }
     }
+    updateEmptyIndeices();
 
-    // init game state 
-    let x1 = Math.floor(Math.random() * 4);
-    let x2 = Math.floor(Math.random() * 4);
-    let y1 = Math.floor(Math.random() * 4);
-    let y2 = Math.floor(Math.random() * 4);
-    console.log(x1, y1, x2, y2);
-    if (x1 == x2) {
-        x1 == 0 ? x1++ : x1--;
-    }
-
-    gameState[x1][y1] = gameState[x2][y2] = 2;
-
-    var tile = document.getElementById(getTileId(x1, y1));
-    tile.classList.add('cell-2');
-    tile.textContent = gameState[x1][y1];
-    var tile = document.getElementById(getTileId(x2, y2));
-    tile.classList.add('cell-2');
-    tile.textContent = 2;
+    console.log("Calling once");
+    fillRandomCell();
+    console.log("Calling Twice");
+    fillRandomCell();
     console.log(gameState);
     playGame();
 }
@@ -64,8 +85,71 @@ function renderBoard() {
 function playGame() {
     $(window).keydown(function(event) {
         if (event.keyCode in keyPressMap) {
-            console.log(keyPressMap[event.keyCode]);
+            let move = keyPressMap[event.keyCode];
+            switch (move) {
+                case UP:
+                    moveTilesUp();
+                    break;
+                case DOWN:
+                    moveTilesDown();
+                    break;
+                case LEFT:
+                    moveTilesLeft();
+                    break;
+                case RIGHT:
+                    moveTilesRight();
+                    break;
+            }
         }
+        console.log(gameState);
+    });
+}
 
-    })
+function moveTilesUp() {
+    // x--
+    let upFlag = false;
+    for (var j = 0; j < boardSize; j++) {
+        for (var i = 1; i < boardSize; i++) {
+            if (gameState[i][j] != 0) {
+                if (gameState[i - 1][j] == gameState[i][j]) {
+                    gameState[i - 1][j] += gameState[i][j];
+                    gameState[i][j] = 0;
+                    upFlag = true;
+                } else if (gameState[i - 1][j] == 0) {
+                    gameState[i - 1][j] = gameState[i][j];
+                    gameState[i][j] = 0;
+                    upFlag = true;
+                }
+            }
+        }
+        shiftColumn(j);
+    }
+
+    console.log(upFlag);
+    if (upFlag)
+        fillRandomCell();
+}
+
+function shiftColumn(col) {
+    let count = 0;
+    for (var i = 0; i < boardSize; i++) {
+        if (gameState[i][col] != 0)
+            gameState[count++][col] = gameState[i][col];
+    }
+
+    while (count < boardSize) {
+        gameState[count++][col] = 0;
+    }
+}
+
+function moveTilesDown() {
+
+}
+
+function moveTilesLeft() {
+
+}
+
+function moveTilesRight() {
+
 }
