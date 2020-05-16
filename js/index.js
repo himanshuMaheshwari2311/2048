@@ -113,7 +113,7 @@ function playGame() {
     $(window).keydown(function(event) {
         if (event.keyCode in keyPressMap) {
             let move = keyPressMap[event.keyCode];
-            gameTerminationCondition();
+            // gameTerminationCondition();
             switch (move) {
                 case UP:
                     // console.log("Board:UP");
