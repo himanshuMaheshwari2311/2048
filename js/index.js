@@ -75,6 +75,15 @@ function updateEmptyIndeices() {
     emptyIndex = list;
 }
 
+function gameTerminationCondition() {
+    let gameStateShadow = [...gameState];
+    let endCondition = moveTilesDown(gameStateShadow) && moveTilesUp(gameStateShadow) && moveTilesLeft(gameStateShadow) && moveTilesRight(gameStateShadow);
+    endCondition &= emptyIndex.length == 0;
+    console.log("Endcondition", endCondition);
+    return endCondition;
+
+}
+
 function renderBoard() {
 
     var board = document.getElementById('board');
@@ -95,7 +104,6 @@ function renderBoard() {
 }
 
 function printBoard() {
-    console.log("Board:");
     for (var i = 0; i < boardSize; i++) {
         console.log(i.toString() + JSON.stringify(gameState[i]));
     }
@@ -105,30 +113,31 @@ function playGame() {
     $(window).keydown(function(event) {
         if (event.keyCode in keyPressMap) {
             let move = keyPressMap[event.keyCode];
+            gameTerminationCondition();
             switch (move) {
                 case UP:
-                    console.log("Board:UP");
-                    moveTilesUp();
+                    // console.log("Board:UP");
+                    moveTilesUp(gameState);
                     break;
                 case DOWN:
-                    console.log("Board:DOWN");
-                    moveTilesDown();
+                    // console.log("Board:DOWN");
+                    moveTilesDown(gameState);
                     break;
                 case LEFT:
-                    console.log("Board:LEFT");
-                    moveTilesLeft();
+                    // console.log("Board:LEFT");
+                    moveTilesLeft(gameState);
                     break;
                 case RIGHT:
-                    console.log("Board:RIGHT");
-                    moveTilesRight();
+                    // console.log("Board:RIGHT");
+                    moveTilesRight(gameState);
                     break;
             }
         }
-        printBoard();
+        // printBoard();
     });
 }
 
-function moveTilesUp() {
+function moveTilesUp(gameState) {
     let mergeFlag = false;
     let shiftFlag = false;
     for (var j = 0; j < boardSize; j++) {
@@ -150,13 +159,15 @@ function moveTilesUp() {
         shiftFlag |= shiftUp(j);
     }
 
-    if (mergeFlag | shiftFlag) {
+    if (mergeFlag || shiftFlag) {
         fillRandomCell();
         updateBoard();
     }
+    printBoard();
+    return mergeFlag || shiftFlag;
 }
 
-function moveTilesDown() {
+function moveTilesDown(gameState) {
     let mergeFlag = false;
     let shiftFlag = false;
     for (var j = 0; j < boardSize; j++) {
@@ -178,13 +189,15 @@ function moveTilesDown() {
         shiftFlag |= shiftDown(j);
     }
 
-    if (mergeFlag | shiftFlag) {
+    if (mergeFlag || shiftFlag) {
         fillRandomCell();
         updateBoard();
     }
+    printBoard();
+    return mergeFlag || shiftFlag;
 }
 
-function moveTilesLeft() {
+function moveTilesLeft(gameState) {
     let mergeFlag = false;
     let shiftflag = false;
     for (var i = 0; i < boardSize; i++) {
@@ -210,9 +223,11 @@ function moveTilesLeft() {
         fillRandomCell();
         updateBoard();
     }
+    printBoard();
+    return mergeFlag || shiftflag;
 }
 
-function moveTilesRight() {
+function moveTilesRight(gameState) {
     let mergeFlag = false;
     let shiftflag = false;
     for (var i = 0; i < boardSize; i++) {
@@ -238,6 +253,8 @@ function moveTilesRight() {
         fillRandomCell();
         updateBoard();
     }
+    printBoard();
+    return mergeFlag || shiftFlag;
 }
 
 function shiftUp(col) {
