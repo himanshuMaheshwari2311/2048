@@ -1,25 +1,13 @@
 let boardSize = 4;
 
-let gameState = [
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-    [0, 0, 0, 0],
-];
+let gameState;
 
-let emptyIndex = [
-    0, 1, 2, 3,
-    4, 5, 6, 7,
-    8, 9, 10, 11,
-    12, 13, 14, 15
-];
+let emptyIndex;
 
 const UP = 'UP';
 const DOWN = 'DOWN';
 const LEFT = 'LEFT';
 const RIGHT = 'RIGHT';
-
-const emptyRow = [0, 0, 0, 0];
 
 let keyPressMap = {
     37: LEFT,
@@ -28,16 +16,20 @@ let keyPressMap = {
     40: DOWN
 };
 
+let gameOver = false;
+
 $(document).ready(function() {
     renderBoard();
 });
 
-function updateTile(value, pos) {
+function updateTile(value, pos, isRandom = false) {
     let tile = document.getElementById(pos);
     tile.className = 'game-tile';
     tile.textContent = '';
     if (value != 0) {
         tile.classList.add('cell-' + value.toString());
+        if (isRandom)
+            tile.classList.add('random-cell');
         tile.textContent = value;
     }
 }
@@ -62,7 +54,7 @@ function fillRandomCell() {
     gameState[x1][y1] = value;
 
     updateEmptyIndeices();
-    updateTile(value, num);
+    updateTile(value, num, true);
     return;
 }
 
@@ -76,15 +68,29 @@ function updateEmptyIndeices() {
 }
 
 function gameTerminationCondition() {
-    let gameStateShadow = [...gameState];
-    let endCondition = moveTilesDown(gameStateShadow) && moveTilesUp(gameStateShadow) && moveTilesLeft(gameStateShadow) && moveTilesRight(gameStateShadow);
-    endCondition &= emptyIndex.length == 0;
-    console.log("Endcondition", endCondition);
-    return endCondition;
 
+    const gameStateShadow = [
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]
+    ];
+    gameState.forEach((e, i) => e.forEach((data, j) => gameStateShadow[i][j] = parseInt(new Number(data).toString())));
+    let endCondition = !(moveTilesDown(gameStateShadow, false) && moveTilesUp(gameStateShadow, false) && moveTilesLeft(gameStateShadow, false) && moveTilesRight(gameStateShadow, false));
+    endCondition = endCondition && emptyIndex.length == 0;
+    return endCondition;
 }
 
 function renderBoard() {
+    gameState = [];
+    emptyIndex = [];
+    for (var i = 0; i < boardSize; i++) {
+        gameState.push([0, 0, 0, 0]);
+    }
+
+    for (var i = 0; i < boardSize * boardSize; i++) {
+        emptyIndex.push(i);
+    }
 
     var board = document.getElementById('board');
 
@@ -99,49 +105,60 @@ function renderBoard() {
     fillRandomCell();
     fillRandomCell();
 
-    printBoard();
     playGame();
 }
 
-function printBoard() {
+function printBoard(gameStatePrint) {
     for (var i = 0; i < boardSize; i++) {
-        console.log(i.toString() + JSON.stringify(gameState[i]));
+        console.log(i.toString() + JSON.stringify(gameStatePrint[i]));
     }
+}
+
+function clearBoard() {
+    var board = document.getElementById('board');
+    board.innerHTML = '';
 }
 
 function playGame() {
     $(window).keydown(function(event) {
-        if (event.keyCode in keyPressMap) {
+        if (event.keyCode in keyPressMap && !gameOver) {
             let move = keyPressMap[event.keyCode];
-            // gameTerminationCondition();
+            let endCondition = gameTerminationCondition();
+            if (endCondition) {
+                gameOver = true;
+                let confirmation = confirm(" Game Over ");
+                if (confirmation) {
+                    gameOver = false;
+                }
+                clearBoard();
+                renderBoard();
+                return;
+            }
             switch (move) {
                 case UP:
-                    // console.log("Board:UP");
                     moveTilesUp(gameState);
                     break;
                 case DOWN:
-                    // console.log("Board:DOWN");
                     moveTilesDown(gameState);
                     break;
                 case LEFT:
-                    // console.log("Board:LEFT");
                     moveTilesLeft(gameState);
                     break;
                 case RIGHT:
-                    // console.log("Board:RIGHT");
                     moveTilesRight(gameState);
                     break;
             }
         }
-        // printBoard();
     });
 }
 
-function moveTilesUp(gameState) {
+function moveTilesUp(gameState, shouldUpdate = true) {
+    console.log("CALLED UP", shouldUpdate)
+    printBoard(gameState);
     let mergeFlag = false;
     let shiftFlag = false;
     for (var j = 0; j < boardSize; j++) {
-        shiftFlag |= shiftUp(j);
+        shiftFlag |= shiftUp(j, gameState);
         for (var i = 1; i < boardSize; i++) {
             if (gameState[i][j] != 0) {
                 if (gameState[i - 1][j] == gameState[i][j]) {
@@ -151,27 +168,27 @@ function moveTilesUp(gameState) {
                     mergeFlag = true;
                 } else if (gameState[i - 1][j] == 0) {
                     gameState[i - 1][j] = gameState[i][j];
-                    mergeFlag[i][j] = 0;
-                    flag = true;
+                    gameState[i][j] = 0;
+                    mergeFlag = true;
                 }
             }
         }
-        shiftFlag |= shiftUp(j);
+        shiftFlag |= shiftUp(j, gameState);
     }
-
-    if (mergeFlag || shiftFlag) {
-        fillRandomCell();
+    if ((mergeFlag || shiftFlag) && shouldUpdate) {
         updateBoard();
+        fillRandomCell();
     }
-    printBoard();
     return mergeFlag || shiftFlag;
 }
 
-function moveTilesDown(gameState) {
+function moveTilesDown(gameState, shouldUpdate = true) {
+    console.log("CALLED DOWN", shouldUpdate)
+    printBoard(gameState);
     let mergeFlag = false;
     let shiftFlag = false;
     for (var j = 0; j < boardSize; j++) {
-        shiftFlag |= shiftDown(j);
+        shiftFlag |= shiftDown(j, gameState);
         for (var i = boardSize - 2; i >= 0; i--) {
             if (gameState[i][j] != 0) {
                 if (gameState[i + 1][j] == gameState[i][j]) {
@@ -186,22 +203,23 @@ function moveTilesDown(gameState) {
                 }
             }
         }
-        shiftFlag |= shiftDown(j);
+        shiftFlag |= shiftDown(j, gameState);
     }
 
-    if (mergeFlag || shiftFlag) {
-        fillRandomCell();
+    if ((mergeFlag || shiftFlag) && shouldUpdate) {
         updateBoard();
+        fillRandomCell();
     }
-    printBoard();
     return mergeFlag || shiftFlag;
 }
 
-function moveTilesLeft(gameState) {
+function moveTilesLeft(gameState, shouldUpdate = true) {
+    console.log("CALLED LEFT", shouldUpdate)
+    printBoard(gameState);
     let mergeFlag = false;
-    let shiftflag = false;
+    let shiftFlag = false;
     for (var i = 0; i < boardSize; i++) {
-        shiftflag |= shiftLeft(i);
+        shiftFlag |= shiftLeft(i, gameState);
         for (var j = 1; j < boardSize; j++) {
             if (gameState[i][j] != 0) {
                 if (gameState[i][j - 1] == gameState[i][j]) {
@@ -216,22 +234,23 @@ function moveTilesLeft(gameState) {
                 }
             }
         }
-        shiftflag |= shiftLeft(i);
+        shiftFlag |= shiftLeft(i, gameState);
     }
 
-    if (mergeFlag || shiftflag) {
-        fillRandomCell();
+    if ((mergeFlag || shiftFlag) && shouldUpdate) {
         updateBoard();
+        fillRandomCell();
     }
-    printBoard();
-    return mergeFlag || shiftflag;
+    return mergeFlag || shiftFlag;
 }
 
-function moveTilesRight(gameState) {
+function moveTilesRight(gameState, shouldUpdate = true) {
+    console.log("CALLED RIGHT", shouldUpdate)
+    printBoard(gameState);
     let mergeFlag = false;
-    let shiftflag = false;
+    let shiftFlag = false;
     for (var i = 0; i < boardSize; i++) {
-        shiftflag |= shiftRight(i);
+        shiftFlag |= shiftRight(i, gameState);
         for (var j = boardSize - 2; j >= 0; j--) {
             if (gameState[i][j] != 0) {
                 if (gameState[i][j + 1] == gameState[i][j]) {
@@ -246,18 +265,17 @@ function moveTilesRight(gameState) {
                 }
             }
         }
-        shiftflag |= shiftRight(i);
+        shiftFlag |= shiftRight(i, gameState);
     }
 
-    if (mergeFlag || shiftflag) {
-        fillRandomCell();
+    if ((mergeFlag || shiftFlag) && shouldUpdate) {
         updateBoard();
+        fillRandomCell();
     }
-    printBoard();
     return mergeFlag || shiftFlag;
 }
 
-function shiftUp(col) {
+function shiftUp(col, gameState) {
     let count = 0;
     const compareCol = [gameState[0][col], gameState[1][col], gameState[2][col], gameState[3][col]];
     for (var i = 0; i < boardSize; i++) {
@@ -272,7 +290,7 @@ function shiftUp(col) {
     return !(compareCol.toString() === currentCol.toString());
 }
 
-function shiftDown(col) {
+function shiftDown(col, gameState) {
     let count = boardSize - 1;
     const compareCol = [gameState[0][col], gameState[1][col], gameState[2][col], gameState[3][col]];
     for (var i = boardSize - 1; i >= 0; i--) {
@@ -287,7 +305,7 @@ function shiftDown(col) {
     return !(compareCol.toString() === currentCol.toString());
 }
 
-function shiftLeft(row) {
+function shiftLeft(row, gameState) {
     let count = 0;
     const compareRow = gameState[row].slice();
     for (var i = 0; i < boardSize; i++) {
@@ -302,7 +320,7 @@ function shiftLeft(row) {
     return !(compareRow.toString() === gameState[row].toString());
 }
 
-function shiftRight(row) {
+function shiftRight(row, gameState) {
     let count = boardSize - 1;
     const compareRow = gameState[row].slice();
     for (var i = boardSize - 1; i >= 0; i--) {

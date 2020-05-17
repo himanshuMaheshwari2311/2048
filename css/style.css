@@ -1,98 +1,155 @@
-    .main {
-        width: 100%;
-        height: 100%;
-        align-content: center;
-        justify-content: center;
+.main {
+    width: 100%;
+    height: 100%;
+    align-content: center;
+    justify-content: center;
+}
+
+.header {
+    width: 100%;
+    height: 100%;
+    align-content: center;
+    justify-content: center;
+    display: flex;
+    flex-grow: 1;
+    flex: 1;
+}
+
+.game-header {
+    width: 100%;
+    height: 100%;
+    align-content: center;
+    justify-content: center;
+    display: flex;
+    flex-grow: 1;
+    flex: 1;
+}
+
+.game-board {
+    margin: auto;
+    border-radius: 5px;
+    background-color: rgba(187, 173, 160, 1);
+    padding: 4px;
+    display: table;
+}
+
+.game-tile {
+    display: table-cell;
+    text-align: center;
+    border-radius: 10px;
+    background-color: rgba(205, 193, 180, 1);
+    border: 4px solid transparent;
+    background-clip: padding-box;
+    font-size: 30pt;
+    color: rgba(119, 110, 101, 1);
+    font-weight: bold;
+    height: 80px;
+    width: 80px;
+    transition: all .2s ease;
+    -ms-transition: all .2s ease;
+    -moz-transition: all .2s ease;
+    -o-transition: all .2s ease;
+    -webkit-transition: all .2s ease;
+}
+
+.cell-2 {
+    background-color: rgba(238, 228, 218, 1);
+    color: rgba(119, 110, 101, 1);
+}
+
+.cell-4 {
+    background-color: rgba(237, 224, 200, 1);
+    color: rgba(119, 110, 101, 1);
+}
+
+.cell-8 {
+    background-color: rgba(242, 177, 121, 1);
+    color: rgba(249, 246, 242, 1);
+}
+
+.cell-16 {
+    background-color: rgba(245, 149, 99, 1);
+    color: rgba(249, 246, 242, 1);
+}
+
+.cell-32 {
+    background-color: rgba(246, 124, 95, 1);
+    color: rgba(249, 246, 242, 1);
+}
+
+.cell-64 {
+    background-color: rgba(246, 94, 59, 1);
+    color: rgba(249, 246, 242, 1);
+}
+
+.cell-128 {
+    background-color: rgba(237, 207, 114, 1);
+    color: rgba(249, 246, 242, 1);
+}
+
+.cell-256 {
+    background-color: rgba(237, 207, 114, 1);
+    color: rgba(249, 246, 242, 1);
+}
+
+.cell-512 {
+    background-color: rgba(237, 200, 80, 1);
+    color: rgba(249, 246, 242, 1);
+}
+
+.cell-1024 {
+    background-color: rgba(237, 200, 80, 1);
+    color: rgba(249, 246, 242, 1);
+}
+
+.cell-2048 {
+    background-color: rgba(237, 200, 80, 1);
+    color: rgba(249, 246, 242, 1);
+}
+
+.cell-4096 {
+    background-color: rgba(237, 200, 80, 1);
+    color: rgba(249, 246, 242, 1);
+}
+
+.cell-8192 {
+    background-color: rgba(237, 200, 80, 1);
+    color: rgba(249, 246, 242, 1);
+}
+
+.cell-16384 {
+    background-color: rgba(237, 200, 80, 1);
+    color: rgba(249, 246, 242, 1);
+}
+
+.random-cell {
+    animation: createBox 0.5s;
+}
+
+.slide {
+    -webkit-animation: slide 0.5s forwards;
+    -webkit-animation-delay: 2s;
+    animation: slide 0.5s forwards;
+    animation-delay: 2s;
+}
+
+@-webkit-keyframes slide {
+    100% {
+        left: 0;
     }
-    
-    .game-board {
-        margin: auto;
-        border-radius: 5px;
-        background-color: rgba(187, 173, 160, 1);
-        padding: 4px;
-        display: table;
+}
+
+@keyframes slide {
+    100% {
+        left: 0;
     }
-    
-    .game-tile {
-        display: table-cell;
-        text-align: center;
-        border-radius: 10px;
-        background-color: rgba(205, 193, 180, 1);
-        border: 4px solid transparent;
-        background-clip: padding-box;
-        font-size: 30pt;
-        color: rgba(119, 110, 101, 1);
-        font-weight: bold;
-        height: 80px;
-        width: 80px;
+}
+
+@keyframes createBox {
+    from {
+        transform: scale(0.5);
     }
-    
-    .cell-2 {
-        background-color: rgba(238, 228, 218, 1);
-        color: rgba(119, 110, 101, 1);
+    to {
+        transform: scale(1);
     }
-    
-    .cell-4 {
-        background-color: rgba(237, 224, 200, 1);
-        color: rgba(119, 110, 101, 1);
-    }
-    
-    .cell-8 {
-        background-color: rgba(242, 177, 121, 1);
-        color: rgba(249, 246, 242, 1);
-    }
-    
-    .cell-16 {
-        background-color: rgba(245, 149, 99, 1);
-        color: rgba(249, 246, 242, 1);
-    }
-    
-    .cell-32 {
-        background-color: rgba(246, 124, 95, 1);
-        color: rgba(249, 246, 242, 1);
-    }
-    
-    .cell-64 {
-        background-color: rgba(246, 94, 59, 1);
-        color: rgba(249, 246, 242, 1);
-    }
-    
-    .cell-128 {
-        background-color: rgba(237, 207, 114, 1);
-        color: rgba(249, 246, 242, 1);
-    }
-    
-    .cell-256 {
-        background-color: rgba(237, 207, 114, 1);
-        color: rgba(249, 246, 242, 1);
-    }
-    
-    .cell-512 {
-        background-color: rgba(237, 200, 80, 1);
-        color: rgba(249, 246, 242, 1);
-    }
-    
-    .cell-1024 {
-        background-color: rgba(237, 200, 80, 1);
-        color: rgba(249, 246, 242, 1);
-    }
-    
-    .cell-2048 {
-        background-color: rgba(237, 200, 80, 1);
-        color: rgba(249, 246, 242, 1);
-    }
-    
-    .cell-4096 {
-        background-color: rgba(237, 200, 80, 1);
-        color: rgba(249, 246, 242, 1);
-    }
-    
-    .cell-8192 {
-        background-color: rgba(237, 200, 80, 1);
-        color: rgba(249, 246, 242, 1);
-    }
-    
-    .cell-16384 {
-        background-color: rgba(237, 200, 80, 1);
-        color: rgba(249, 246, 242, 1);
-    }
+}
