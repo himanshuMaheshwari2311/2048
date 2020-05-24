@@ -127,7 +127,8 @@ function clearBoard() {
 }
 
 function playGame() {
-    $(window).keydown(function(event) {
+    var x;
+    $(window).keydown(x = function(event) {
         if (event.keyCode in keyPressMap && !gameOver) {
             direction = keyPressMap[event.keyCode];
             let endCondition = gameTerminationCondition();
@@ -137,6 +138,7 @@ function playGame() {
                 if (confirmation) {
                     gameOver = false;
                 }
+                window.removeEventListener('keydown', x);
                 clearBoard();
                 renderBoard();
                 return;
