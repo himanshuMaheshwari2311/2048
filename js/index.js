@@ -87,6 +87,15 @@ function gameTerminationCondition() {
     return endCondition;
 }
 
+function updateScores(gameScore) {
+    const score = document.getElementById('curr-score');
+    score.innerHTML = gameScore.toString();
+    const besScore = document.getElementById('best-score');
+    if (parseInt(besScore.innerHTML) < gameScore) {
+        besScore.innerHTML = gameScore;
+    }
+}
+
 function renderBoard() {
     gameState = [];
     emptyIndex = [];
@@ -126,6 +135,19 @@ function clearBoard() {
     board.innerHTML = '';
 }
 
+function newGame(buttonAction) {
+    if (!buttonAction) {
+        gameOver = true;
+        let confirmation = confirm(" Game Over, continue ");
+        if (confirmation) {
+            gameOver = false;
+        }
+    }
+    clearBoard();
+    renderBoard();
+    return;
+}
+
 function playGame() {
     var x;
     $(window).keydown(x = function(event) {
@@ -133,15 +155,7 @@ function playGame() {
             direction = keyPressMap[event.keyCode];
             let endCondition = gameTerminationCondition();
             if (endCondition) {
-                gameOver = true;
-                let confirmation = confirm(" Game Over ");
-                if (confirmation) {
-                    gameOver = false;
-                }
-                window.removeEventListener('keydown', x);
-                clearBoard();
-                renderBoard();
-                return;
+                newGame(false);
             }
             switch (direction) {
                 case UP:
@@ -173,6 +187,7 @@ function moveTilesUp(gameState, shouldUpdate = true) {
                 if (gameState[i - 1][j] == gameState[i][j]) {
                     gameState[i - 1][j] += gameState[i][j];
                     shouldUpdate ? gameScore += gameState[i - 1][j] : null;
+                    shouldUpdate ? updateScores(gameScore) : null;
                     gameState[i][j] = 0;
                     i++;
                     mergeFlag = true;
@@ -204,6 +219,7 @@ function moveTilesDown(gameState, shouldUpdate = true) {
                 if (gameState[i + 1][j] == gameState[i][j]) {
                     gameState[i + 1][j] += gameState[i][j];
                     shouldUpdate ? gameScore += gameState[i + 1][j] : null;
+                    shouldUpdate ? updateScores(gameScore) : null;
                     gameState[i][j] = 0;
                     i--;
                     mergeFlag = true;
@@ -237,6 +253,7 @@ function moveTilesLeft(gameState, shouldUpdate = true) {
                     gameState[i][j - 1] += gameState[i][j];
                     gameState[i][j] = 0;
                     shouldUpdate ? gameScore += gameState[i][j - 1] : null;
+                    shouldUpdate ? updateScores(gameScore) : null;
                     j++;
                     mergeFlag = true;
                 } else if (gameState[i][j - 1] == 0) {
@@ -269,6 +286,7 @@ function moveTilesRight(gameState, shouldUpdate = true) {
                     gameState[i][j + 1] += gameState[i][j];
                     gameState[i][j] = 0;
                     shouldUpdate ? gameScore += gameState[i][j + 1] : null;
+                    shouldUpdate ? updateScores(gameScore) : null;
                     j--;
                     mergeFlag = true;
                 } else if (gameState[i][j + 1] == 0) {
@@ -321,7 +339,6 @@ function shiftDown(col, gameState, shouldUpdate) {
     const currentCol = [gameState[0][col], gameState[1][col], gameState[2][col], gameState[3][col]];
     let flag = !(compareCol.toString() === currentCol.toString());
     if (flag && shouldUpdate) {
-        console.log("Updating board")
         updateBoard();
     }
     return flag;

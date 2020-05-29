@@ -19,15 +19,20 @@
 
 <body>
     <div class='header'>
-        <div style="display: flex;">
-            <h1 style='text-align: center; font-size: 36pt'>2048</h1>
-            <div>
-                <p style='text-align: center; font-size: 16pt'>Score</p>
-                <p style='text-align: center; font-size: 16pt'></p>
+        <div style="display: flex; width: 400px; height: 115px;">
+            <h1 style='text-align: center; font-size: 36pt; padding: 0 20px;'>2048</h1>
+            <div class='score'>
+                <p class='score-text' style='font-size: 12pt;'>Score</p>
+                <p class='score-text' style='font-weight: bold;' id='curr-score'>0</p>
             </div>
-            <div>
-
+            <div class='score'>
+                <p class='score-text' style='font-size: 12pt;'>Best score</p>
+                <p class='score-text' style='font-weight: bold;' id='best-score'>240</p>
             </div>
+        </div>
+        <div style="display: flex; width: 400px; flex-direction: row;">
+            <p class="description">Join the numbers and get to the tile<br/> <b>2048 tile!</b></p>
+            <input type="button" value="New Game" class='new-game' onclick="newGame(true)" />
         </div>
     </div>
     <div class='main'>
